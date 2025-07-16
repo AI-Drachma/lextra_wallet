@@ -1,0 +1,36 @@
+{
+  "dxt_version": "0.1",
+  "name": "nova_wallet",
+  "version": "1.0.0",
+  "description": "Cardano Wallet for A.I. ",
+  "author": {
+    "name": "Max Highsmith",
+    "email": "drachma.forge@gmail.com"
+  },
+  "icon": "icon.png",
+  "server": {
+    "type": "python",
+    "entry_point": "server/main.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": [
+        "${__dirname}/server/main.py"
+      ],
+      "env": {
+        "PYTHONPATH": "server/lib"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "create_wallet",
+      "description": "create a cardano wallet"
+    }
+  ],
+  "keywords": [
+    "cardano",
+    "wallet",
+    "ada"
+  ],
+  "license": "MIT"
+}
