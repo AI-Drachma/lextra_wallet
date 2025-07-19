@@ -7,7 +7,7 @@
     "name": "Max Highsmith",
     "email": "drachma.forge@gmail.com"
   },
-  "icon": "icon.png",
+  "icon": "nova_icon.png",
   "server": {
     "type": "python",
     "entry_point": "server/main.py",

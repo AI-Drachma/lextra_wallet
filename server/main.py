@@ -2,8 +2,29 @@ import os
 import sys
 
 version = f"{sys.version_info.major}.{sys.version_info.minor}"
-pkg_path = os.path.join(os.path.dirname(__file__), "..", "__pypackages__", version, "lib")
-sys.path.insert(0, os.path.abspath(pkg_path))
+
+# Try multiple possible locations for __pypackages__ for portability
+current_dir = os.path.dirname(__file__)
+possible_paths = [
+    # Development structure: nova_wallet/server/main.py and nova_wallet/__pypackages__/
+    os.path.join(current_dir, "..", "__pypackages__", version, "lib"),
+    # Deployed structure: both server/ and __pypackages__/ at same level
+    os.path.join(current_dir, "..", "..", "__pypackages__", version, "lib"),
+    # Fallback: check if __pypackages__ is in current directory
+    os.path.join(current_dir, "__pypackages__", version, "lib"),
+]
+
+pkg_path = None
+for path in possible_paths:
+    if os.path.exists(path):
+        pkg_path = os.path.abspath(path)
+        break
+
+if pkg_path:
+    sys.path.insert(0, pkg_path)
+else:
+    # If no __pypackages__ found, print warning but continue
+    print(f"Warning: __pypackages__ not found in expected locations. Falling back to system packages.")
 
 
 import json

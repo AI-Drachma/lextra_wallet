@@ -1,0 +1,10 @@
+# ignore virtual environments
+.venv/
+__pycache__/
+.pytest_cache/
+tests/
+*.cbor
+*.pyc
+
+# ignore metadata
+*.dist-info/
