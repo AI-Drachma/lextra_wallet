@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Node.js
@@ -18,13 +18,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dxt CLI
-        run: npm install -g @mcli/dxt
+      - name: Install DXT CLI
+        run: npm install -g @anthropic-ai/dxt
 
-      - name: Pack DXT extension
+      - name: Pack DXT Extension
         run: dxt pack . --output nova-wallet.dxt
 
-      - name: Upload DXT file
+      - name: Upload DXT artifact
         uses: actions/upload-artifact@v4
         with:
           name: nova-wallet
