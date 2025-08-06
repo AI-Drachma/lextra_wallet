@@ -1,33 +1,32 @@
-name: Build .dxt package
+name: Pack MCP Extension
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:  # Allow manual run
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  build-dxt:
+  pack-dxt:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install MCP CLI with typer
-      run: pip install "mcp[cli]"
+      - name: Install DXT CLI
+        run: npm install -g @mcli/dxt
 
+      - name: Pack .dxt extension
+        run: dxt pack .
 
-    - name: Build .dxt package
-      run: |
-        mcp pack .
-
-    - name: Upload .dxt artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: nova_wallet.dxt
-        path: nova_wallet.dxt
+      - name: Upload packed extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nova-wallet
+          path: nova-wallet.dxt
