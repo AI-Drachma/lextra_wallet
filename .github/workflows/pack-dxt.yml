@@ -23,7 +23,7 @@ jobs:
 
       - name: Validate and Pack DXT Extension
         run: |
-          dxt validate
+          dxt validate manifest.json
           dxt pack .
 
       - name: Upload DXT artifact
