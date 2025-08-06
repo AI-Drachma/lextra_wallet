@@ -18,13 +18,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dxt CLI from GitHub
-        run: |
-          git clone https://github.com/mcli/dxt-cli.git
-          cd dxt-cli
-          npm install
-          npm run build
-          npm link  # makes `dxt` globally available
+      - name: Install dxt CLI
+        run: npm install -g @mcli/dxt
 
       - name: Pack DXT extension
         run: dxt pack . --output nova-wallet.dxt
