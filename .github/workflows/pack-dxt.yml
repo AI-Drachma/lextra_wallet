@@ -10,24 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ⬇️ Check out your repo
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 🐍 Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 📦 Install Python dependencies into __pypackages__
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --target=__pypackages__ -r requirements.txt
+
+      # ⚙️ Set up Node.js (needed for DXT CLI)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
+      # 🧰 Install the DXT CLI from Anthropic
       - name: Install DXT CLI
         run: npm install -g @anthropic-ai/dxt
 
+      # ✅ Validate and pack the extension
       - name: Validate and Pack DXT Extension
         run: |
           dxt validate manifest.json
           dxt pack .
 
+      # 📁 Upload the generated DXT artifact
       - name: Upload DXT artifact
         uses: actions/upload-artifact@v4
         with:
           name: nova-wallet
-          path: nova_wallet.dxt  # ✅ correct path relative to $GITHUB_WORKSPACE
+          path: nova_wallet.dxt

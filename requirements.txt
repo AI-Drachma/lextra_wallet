@@ -1,0 +1,8 @@
+pycardano
+mnemonic
+bech32
+cbor2
+segno
+requests
+platformdirs
+rpds-py
