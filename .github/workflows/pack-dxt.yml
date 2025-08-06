@@ -22,7 +22,7 @@ jobs:
         run: npm install -g @anthropic-ai/dxt
 
       - name: Pack DXT Extension
-        run: dxt pack .
+        run: dxt pack . --output nova-wallet.dxt
 
       - name: Upload DXT artifact
         uses: actions/upload-artifact@v4
