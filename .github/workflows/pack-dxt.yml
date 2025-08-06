@@ -1,31 +1,35 @@
-name: Pack MCP Extension
+name: Pack DXT Extension
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  pack-dxt:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
-      - name: Install DXT CLI
-        run: npm install -g @mcli/dxt
+      - name: Install dxt CLI from GitHub
+        run: |
+          git clone https://github.com/mcli/dxt-cli.git
+          cd dxt-cli
+          npm install
+          npm run build
+          npm link  # makes `dxt` globally available
 
-      - name: Pack .dxt extension
-        run: dxt pack .
+      - name: Pack DXT extension
+        run: dxt pack . --output nova-wallet.dxt
 
-      - name: Upload packed extension artifact
+      - name: Upload DXT file
         uses: actions/upload-artifact@v4
         with:
           name: nova-wallet
