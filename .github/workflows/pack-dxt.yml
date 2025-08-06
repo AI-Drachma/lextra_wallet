@@ -1,0 +1,32 @@
+name: Build .dxt package
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual run
+
+jobs:
+  build-dxt:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install MCP CLI
+      run: pip install mcp
+
+    - name: Build .dxt package
+      run: |
+        mcp pack .
+
+    - name: Upload .dxt artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nova_wallet.dxt
+        path: nova_wallet.dxt
