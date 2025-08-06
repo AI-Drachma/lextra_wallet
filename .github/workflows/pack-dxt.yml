@@ -21,11 +21,13 @@ jobs:
       - name: Install DXT CLI
         run: npm install -g @anthropic-ai/dxt
 
-      - name: Pack DXT Extension
-        run: dxt pack .
+      - name: Validate and Pack DXT Extension
+        run: |
+          dxt validate
+          dxt pack .
 
       - name: Upload DXT artifact
         uses: actions/upload-artifact@v4
         with:
           name: nova-wallet
-          path: extension.dxt  # ✅ use the actual filename
+          path: nova_wallet/nova_wallet/nova_wallet.dxt
