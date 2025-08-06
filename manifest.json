@@ -12,7 +12,7 @@
     "type": "python",
     "entry_point": "server/main.py",
     "mcp_config": {
-      "command": "python3",
+      "command": "python3.11",
       "args": [
         "${__dirname}/server/main.py"
       ],

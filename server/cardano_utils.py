@@ -1,54 +1,57 @@
 import os
+import time
+import pdb
+import struct
+import hashlib
+import cbor2
+import bech32
 import requests
 from pathlib import Path
 from platformdirs import user_data_dir
+from mnemonic import Mnemonic
 from pycardano import (
     HDWallet,
     Address,
     Network,
     PaymentSigningKey,
     StakeSigningKey,
+    StakeVerificationKey,
+    StakeCredential,
+    StakeRegistration,
+    StakeDelegation,
     TransactionBuilder,
     TransactionOutput,
+    TransactionInput,
+    TransactionId,
     UTxO,
+    Value,
     ProtocolParameters,
-    ChainContext
-)
-from mnemonic import Mnemonic
-from pycardano import HDWallet
-import pdb
-from mnemonic import Mnemonic
-
-from pycardano import (
-    MultiAsset,
-    AssetName,
+    ChainContext,
     ScriptPubkey,
+    AssetName,
+    MultiAsset,
+    Asset,
     NativeScript,
-    InvalidHereAfter,
+    InvalidHereAfter
 )
-from pycardano import StakeRegistration
 
 
-import time
-
-# === CONFIG ===
 def get_proxy_url():
     """Get the proxy URL based on current network configuration."""
     network = get_current_network()
     if network == Network.MAINNET:
-        return "https://nova-wallet-proxy.onrender.com/blockfrost"  # Mainnet endpoint
+        return "https://nova-wallet-proxy.onrender.com/mainnet"
     else:
-        return "https://nova-wallet-proxy.onrender.com/blockfrost"  # Testnet endpoint (same for now)
+        return "https://nova-wallet-proxy.onrender.com/preprod"
+
 
 PROXY_TOKEN = None  # Your proxy applies the Blockfrost key
 HEADERS = {"x-api-token": PROXY_TOKEN} if PROXY_TOKEN else {}
 
+# Data directory setup for transaction files
+APP_NAME = "nova_wallet"
+APP_AUTHOR = "Drachma"
 
-from pycardano import UTxO, TransactionInput, TransactionOutput, Value
-
-from pycardano import TransactionId
-
-from pycardano import StakeDelegation, StakeCredential
 
 def get_current_network():
     """Get the current network from configuration."""
@@ -202,7 +205,10 @@ def _build_address(name: str, output_dir: str) -> dict:
         "vkey_path": vkey_path
     }
 
-def _build_wallet_from_mnemonic(mnemonic_words: str, name: str, output_dir: str) -> dict:
+def _build_wallet_from_mnemonic(mnemonic_words: str,
+    name: str, 
+    output_dir: str,
+    derivation_path ="m/1852'/1815'/0'/0/0") -> dict:
     # Create HD wallet from mnemonic
     hdwallet = HDWallet.from_mnemonic(mnemonic_words)
     
@@ -258,26 +264,6 @@ def _generate_new_wallet(name: str, output_dir: str) -> dict:
     mnemonic_words = mnemo.generate(strength=256)  # 24 words
     return _build_wallet_from_mnemonic(mnemonic_words, name, output_dir)
 
-from pycardano import (
-    PaymentSigningKey,
-    StakeSigningKey,
-    Address,
-    StakeCredential,
-    StakeRegistration,
-    TransactionBuilder,
-    Network,
-)
-from pathlib import Path
-
-
-from pycardano import StakeCredential, Address
-
-import bech32
-from pycardano import StakeCredential, StakeVerificationKey
-import cbor2
-import hashlib
-import struct
-
 def get_stake_address(stake_vk: StakeVerificationKey, network=None) -> str:
     if network is None:
         network = get_network()
@@ -325,10 +311,6 @@ def is_stake_key_registered(stake_vk) -> bool:
         print(f"🔍 Registration check error: {e}")
         # If we can't determine, assume not registered to be safe
         return False
-
-# Data directory setup for transaction files
-APP_NAME = "nova_wallet"
-APP_AUTHOR = "Drachma"
 
 def get_data_dir():
     data_dir = user_data_dir(APP_NAME, APP_AUTHOR)
@@ -410,8 +392,6 @@ def _register_stake_key(payment_skey_path: str, stake_skey_path: str, address_st
             print(f"❌ Transaction submission failed with status {e.response.status_code}")
             return f"❌ Transaction submission failed: {e.response.text}"
 
-
-
 def is_stake_key_delegated_to_pool(stake_vk, pool_id: str) -> bool:
     """Check if the stake key is already delegated to the specified pool."""
     stake_address = get_stake_address(stake_vk, network=get_network())
@@ -481,7 +461,6 @@ def _delegate_stake_key(payment_skey_path: str, stake_skey_path: str, pool_id: s
             return "❌ Transaction format incompatibility: PyCardano 0.14.0 generates transaction formats that are not compatible with the current Cardano Conway era. The delegation logic is correct, but the library needs updating to support the latest transaction serialization format. Consider checking for a newer version of pycardano or using an alternative Cardano library."
         else:
             return f"❌ Delegation transaction submission failed: {e.response.text}"
-
 
 def _delegate_stake_key_cbor(payment_skey_path: str, stake_skey_path: str, pool_id: str) -> str:
     """
@@ -669,22 +648,19 @@ def _decode_pool_id(pool_id):
         raise ValueError(f"Could not decode pool ID: {pool_id}")
 
 
+def _mint_token():
+    print("TODO")
+
 # === MAIN TEST ENTRYPOINT ===
 if __name__ == '__main__':
-    pay_skey_path = "tests/test_data/alex.skey"
-    pay_vkey_path = "tests/test_data/alex.vkey"
-    stake_skey_path = "tests/test_data/alex.stake.skey"
-    stake_vkey_path = "tests/test_data/alex.stake.svkey"
+    pay_skey_path = "server/tests/test_data/alex.skey"
+    pay_vkey_path = "server/tests/test_data/alex.vkey"
+    stake_skey_path = "server/tests/test_data/alex.stake.skey"
+    stake_vkey_path = "server/tests/test_data/alex.stake.svkey"
     pool_id = "pool1zwzmlqkk8g5w63t7f02ch2t6p7y8g5rpgrq4gqcqc26t2k2d7l9"
 
     ALEX_ADDRESS = "addr_test1qqhe0pztnczpn483uu8km9hg52z47t92s5d9zsec870x258ug3n8hn3wpvqxw98z897kql8ufrkpuu2w8vz746ny4nqq8kadh3"
     BETHA_ADDRESS = "addr_test1qpqjuf0q5auemrntca53w78q2sghuwf9ap30senprnrphsmrnlsts2mcy2qql2yq52uh9m634f9tyn8wa9kflsa8g95qzzrdj0"
-    #print(_send_money(pay_skey_path, ALEX_ADDRESS, 5_000_000))
-    _register_stake_key(pay_skey_path, stake_skey_path, ALEX_ADDRESS )
-    _delegate_stake_key(pay_skey_path, stake_skey_path, pool_id)
-    #b_addr = "addr_test1vqnv2652dhpa0des2qku68psmg79xlxtvmrnr3gj657a9eck8t39z"
-    #ada = 5_000_000
-    #result = _register_stake_key(payment_skey_path, stake_skey_path)
-    #print(_view_wallet(b_addr))\
-    #print(_send_money(skey, b_addr, ada))
-    #generate_new_wallet("testing",".")
+    
+
+  
