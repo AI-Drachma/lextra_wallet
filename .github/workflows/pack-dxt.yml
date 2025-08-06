@@ -30,5 +30,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nova-wallet
-          path: nova_wallet/nova_wallet/*.dxt
-
+          path: nova_wallet.dxt  # ✅ correct path relative to $GITHUB_WORKSPACE
