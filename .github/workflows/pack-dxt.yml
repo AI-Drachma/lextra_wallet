@@ -3,45 +3,40 @@ name: Build Nova Wallet DXT
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build-dxt:
-    runs-on: macos-latest
-
+    runs-on: macos-latest  # or ubuntu-latest if you can build cross-platform safely
     steps:
-      - name: 📥 Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: 🐍 Set up Python 3.11
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: '3.11'
 
-      - name: 💾 Set up Node.js 20
+      - name: Install Node.js (for DXT CLI)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
-      - name: 🧪 Install Python packages (with special flags)
+      - name: Install DXT CLI
+        run: npm install -g @anthropic/dxt
+
+      - name: Install Python dependencies into __pypackages__
         run: |
-          python3.11 -m pip install --upgrade pip
-          python3.11 -m pip install --no-cache-dir --target=__pypackages__/3.11/lib -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install --target=__pypackages__/3.11/lib -r requirements.txt
 
-      - name: 🧰 Clone and build dxt-cli
-        run: |
-          git clone https://github.com/mcli/dxt-cli.git
-          cd dxt-cli
-          npm install
-          npm run build
-          npm link
+      - name: Validate DXT manifest
+        run: dxt validate manifest.json
 
-      - name: 📦 Pack DXT extension
-        run: |
-          dxt pack .
+      - name: Pack DXT
+        run: dxt pack .
 
-      - name: 🚀 Upload DXT artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: nova_wallet.dxt
