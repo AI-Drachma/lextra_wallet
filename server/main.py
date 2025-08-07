@@ -59,14 +59,14 @@ def debug_log(message):
     
     # Also log to a temp file that we can check
     try:
-        debug_file = os.path.join(tempfile.gettempdir(), "nova_wallet_debug.log")
+        debug_file = os.path.join(tempfile.gettempdir(), "lextra_wallet_debug.log")
         with open(debug_file, "a") as f:
             f.write(full_message + "\n")
     except Exception:
         pass  # Don't let logging errors break the main script
 
 version = sys.version
-debug_log(f"=== Nova Wallet Debug Session Started ===")
+debug_log(f"=== Lextra Wallet Debug Session Started ===")
 debug_log(f"Python {version}")
 debug_log(f"__file__ = {__file__}")
 debug_log(f"os.path.dirname(__file__) = {os.path.dirname(__file__)}")
@@ -123,7 +123,7 @@ def find_pypackages_versions(base_dirs):
 
 # Try multiple possible locations for __pypackages__ for portability
 base_search_dirs = [
-    # Development structure: nova_wallet/server/main.py and nova_wallet/__pypackages__/
+    # Development structure: lextra_wallet/server/main.py and lextra_wallet/__pypackages__/
     os.path.join(current_dir, ".."),
     # Deployed structure: both server/ and __pypackages__/ at same level  
     os.path.join(current_dir, "..", ".."),
@@ -210,7 +210,7 @@ else:
             dirs.clear()
 
 debug_log(f"About to attempt MCP import...")
-debug_log(f"Debug log written to: {os.path.join(tempfile.gettempdir(), 'nova_wallet_debug.log')}")
+debug_log(f"Debug log written to: {os.path.join(tempfile.gettempdir(), 'lextra_wallet_debug.log')}")
 
 # Import other dependencies first (these should be available)
 import json
@@ -285,7 +285,7 @@ except ImportError as e:
             debug_log(f"Fallback MCP server would run with {len(self.tools)} tools")
             debug_log(f"Platform compatibility issues prevent full MCP functionality")
             debug_log(f"All {len(self.tools)} tools are registered and functional")
-            print(f"SUCCESS: Nova Wallet server running with {len(self.tools)} tools using fallback MCP", file=sys.stderr)
+            print(f"SUCCESS: Lextra Wallet server running with {len(self.tools)} tools using fallback MCP", file=sys.stderr)
             print("Deletion functionality (remove_contact, remove_wallet) is available", file=sys.stderr)
             # Don't exit - tools are registered and functional
             import time
@@ -314,10 +314,10 @@ from io import BytesIO
 import tempfile
 import subprocess
 
-mcp = FastMCP("nova-wallet")
+mcp = FastMCP("lextra-wallet")
 
 # 🔐 Define secure writable paths
-APP_NAME = "nova_wallet"
+APP_NAME = "lextra_wallet"
 APP_AUTHOR = "Drachma"
 
 

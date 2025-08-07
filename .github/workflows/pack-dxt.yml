@@ -1,4 +1,4 @@
-name: Build Nova Wallet DXT
+name: Build Lextra Wallet DXT
 
 on:
   workflow_dispatch:
@@ -39,5 +39,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nova_wallet.dxt
-          path: nova_wallet.dxt
+          name: lextra_wallet.dxt
+          path: lextra_wallet.dxt

@@ -49,7 +49,7 @@ PROXY_TOKEN = None  # Your proxy applies the Blockfrost key
 HEADERS = {"x-api-token": PROXY_TOKEN} if PROXY_TOKEN else {}
 
 # Data directory setup for transaction files
-APP_NAME = "nova_wallet"
+APP_NAME = "lextra_wallet"
 APP_AUTHOR = "Drachma"
 
 
