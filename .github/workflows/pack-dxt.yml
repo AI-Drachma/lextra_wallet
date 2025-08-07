@@ -1,50 +1,45 @@
-name: Pack DXT Extension
+name: Pack Nova Wallet DXT
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-dxt:
+    runs-on: macos-14  # Use macOS runner for .so compatibility with Claude
 
     steps:
-      # ⬇️ Check out your repo
-      - name: Checkout code
+      - name: 📥 Checkout Repo
         uses: actions/checkout@v4
 
-      # 🐍 Set up Python
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # 📦 Install Python dependencies into __pypackages__
-      - name: Install Python dependencies
+      - name: 🛠️ Install MCP CLI + DXT
         run: |
-          python -m pip install --upgrade pip
-          pip install --target=__pypackages__ -r requirements.txt
+          pip install mcp[cli]
+          npm install -g dxt-cli
 
-      # ⚙️ Set up Node.js (needed for DXT CLI)
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      - name: 🧹 Clean __pypackages__
+        run: rm -rf __pypackages__
 
-      # 🧰 Install the DXT CLI from Anthropic
-      - name: Install DXT CLI
-        run: npm install -g @anthropic-ai/dxt
-
-      # ✅ Validate and pack the extension
-      - name: Validate and Pack DXT Extension
+      - name: 📦 Install all dependencies from source
         run: |
-          dxt validate manifest.json
-          dxt pack .
+          python3.11 -m pip install --upgrade pip
+          python3.11 -m pip install --no-binary=:all: --no-cache-dir --target=__pypackages__/3.11/lib -r requirements.txt
+          python3.11 -m pip install --no-binary=:all: --no-cache-dir --target=__pypackages__/3.11/lib mcp pydantic rpds-py
 
-      # 📁 Upload the generated DXT artifact
-      - name: Upload DXT artifact
+      - name: 📁 List packages (debug)
+        run: ls __pypackages__/3.11/lib
+
+      - name: 📦 Pack DXT
+        run: dxt pack . --out nova_wallet.dxt
+
+      - name: 📤 Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: nova-wallet
+          name: nova_wallet.dxt
           path: nova_wallet.dxt
