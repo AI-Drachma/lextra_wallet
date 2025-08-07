@@ -1,13 +1,13 @@
 {
   "dxt_version": "0.1",
-  "name": "nova_wallet",
+  "name": "lextra_wallet",
   "version": "1.0.0",
   "description": "Cardano Wallet for A.I. ",
   "author": {
     "name": "Max Highsmith",
     "email": "drachma.forge@gmail.com"
   },
-  "icon": "nova_icon.png",
+  "icon": "lextra_icon.png",
   "server": {
     "type": "python",
     "entry_point": "server/main.py",
