@@ -1,44 +1,47 @@
-name: Pack Nova Wallet DXT
+name: Build Nova Wallet DXT
 
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build-dxt:
-    runs-on: macos-14  # Use macOS runner for .so compatibility with Claude
+    runs-on: macos-latest
 
     steps:
-      - name: 📥 Checkout Repo
-        uses: actions/checkout@v4
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
 
       - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: 3.11
 
-      - name: 🛠️ Install MCP CLI + DXT
-        run: |
-          pip install mcp[cli]
-          npm install -g dxt-cli
+      - name: 💾 Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      - name: 🧹 Clean __pypackages__
-        run: rm -rf __pypackages__
-
-      - name: 📦 Install all dependencies from source
+      - name: 🧪 Install Python packages (with special flags)
         run: |
           python3.11 -m pip install --upgrade pip
-          python3.11 -m pip install --no-binary=:all: --no-cache-dir --target=__pypackages__/3.11/lib -r requirements.txt
-          python3.11 -m pip install --no-binary=:all: --no-cache-dir --target=__pypackages__/3.11/lib mcp pydantic rpds-py
+          python3.11 -m pip install --no-cache-dir --target=__pypackages__/3.11/lib -r full_requirements.txt
 
-      - name: 📁 List packages (debug)
-        run: ls __pypackages__/3.11/lib
+      - name: 🧰 Clone and build dxt-cli
+        run: |
+          git clone https://github.com/mcli/dxt-cli.git
+          cd dxt-cli
+          npm install
+          npm run build
+          npm link
 
-      - name: 📦 Pack DXT
-        run: dxt pack . --out nova_wallet.dxt
+      - name: 📦 Pack DXT extension
+        run: |
+          dxt pack .
 
-      - name: 📤 Upload Artifact
+      - name: 🚀 Upload DXT artifact
         uses: actions/upload-artifact@v4
         with:
           name: nova_wallet.dxt
