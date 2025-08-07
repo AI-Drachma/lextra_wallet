@@ -23,7 +23,7 @@ jobs:
           node-version: '20'
 
       - name: Install DXT CLI
-        run: npm install -g @anthropic/dxt
+        run: npm install -g @anthropic-ai/dxt
 
       - name: Install Python dependencies into __pypackages__
         run: |
