@@ -27,7 +27,7 @@ jobs:
       - name: 🧪 Install Python packages (with special flags)
         run: |
           python3.11 -m pip install --upgrade pip
-          python3.11 -m pip install --no-cache-dir --target=__pypackages__/3.11/lib -r full_requirements.txt
+          python3.11 -m pip install --no-cache-dir --target=__pypackages__/3.11/lib -r requirements.txt
 
       - name: 🧰 Clone and build dxt-cli
         run: |
